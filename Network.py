@@ -8,7 +8,8 @@ from torch.utils.data import DataLoader, TensorDataset
 
 class Network(nn.Module):
 
-    def __init__(self, in_size, layer_dims, seed=50):
+    def __init__(self, in_size, layer_dims, seed=50, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         random.seed(seed)
         np.random.seed(seed)
         torch.manual_seed(seed)

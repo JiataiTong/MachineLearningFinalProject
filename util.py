@@ -2,6 +2,10 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
+import torch
+from torch.utils.data import TensorDataset, DataLoader
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.model_selection import ParameterGrid
 
 
 education_level = ['High School', 'Associate', 'Bachelor', 'Master', 'Doctorate']
@@ -77,6 +81,105 @@ def pre_process_test_dataset(csv_filename, scaler):
 
     return normalized_df
 
+
+def separate_labels(df):
+    label_columns = ["LoanApproved", "RiskScore"]
+    y1_array = df[label_columns[0]].to_numpy()
+    y2_array = df[label_columns[1]].to_numpy()
+    x_df = df.drop(columns=label_columns)
+    return x_df, y1_array, y2_array
+
+
+def generate_dataset(x_df, y_array):
+    x_tensor = torch.tensor(x_df.values, dtype=torch.float32)
+    y_tensor = torch.tensor(y_array, dtype=torch.float32).unsqueeze(1)
+    return TensorDataset(x_tensor, y_tensor)
+
+
+def evaluate_binary_classification(model, dataset, threshold=0.5):
+    """
+    Evaluate a trained binary classification model on a test or validation dataset.
+
+    Args:
+        model: The trained PyTorch model.
+        dataset: A PyTorch dataset containing features and labels.
+        threshold: Threshold for converting predicted probabilities to binary labels.
+
+    Returns:
+        metrics: A dictionary containing accuracy, precision, recall, and F1 score.
+    """
+    # DataLoader for the dataset
+    loader = DataLoader(dataset, batch_size=len(dataset), shuffle=False)
+
+    # Ensure model is in evaluation mode
+    model.eval()
+
+    # Gather predictions and true labels
+    with torch.no_grad():
+        for batch_x, batch_y in loader:
+            predictions = model(batch_x)  # Forward pass
+            predictions = torch.sigmoid(predictions).squeeze()  # Apply sigmoid and flatten
+            predicted_labels = (predictions >= threshold).int()  # Convert probabilities to binary labels
+            true_labels = batch_y.int()  # Ensure labels are integers for comparison
+
+    # Convert tensors to NumPy arrays for evaluation
+    predicted_labels = predicted_labels.numpy()
+    true_labels = true_labels.numpy()
+
+    # Calculate metrics
+    metrics = {
+        "accuracy": accuracy_score(true_labels, predicted_labels),
+        "precision": precision_score(true_labels, predicted_labels, zero_division=0),
+        "recall": recall_score(true_labels, predicted_labels, zero_division=0),
+        "f1_score": f1_score(true_labels, predicted_labels, zero_division=0)
+    }
+
+    return metrics
+
+
+def find_best_hyperparameters(model_class, train_dataset, valid_dataset, param_grid):
+    """
+    Find the best hyperparameters for a model using F1 Score on the validation dataset.
+
+    param_grid example:
+    param_grid = {
+    'num_epochs': [20, 50, 100],
+    'batch_size': [16, 32, 64],
+    'learning_rate': [0.001, 0.01, 0.1]
+    }
+    """
+    best_f1 = 0
+    best_params = None
+
+    # Iterate over all combinations of parameters
+    for params in ParameterGrid(param_grid):
+        # Unpack parameters
+        num_epochs = params['num_epochs']
+        batch_size = params['batch_size']
+        learning_rate = params['learning_rate']
+
+        # Initialize model
+        model = model_class(in_size=train_dataset[0][0].shape[0], layer_dims=[64, 32, 1])
+
+        # Train the model
+        model.train_model_binary(
+            train_dataset=train_dataset,
+            valid_dataset=valid_dataset,
+            num_epochs=num_epochs,
+            batch_size=batch_size,
+            learning_rate=learning_rate
+        )
+
+        # Evaluate on the validation set
+        metrics = evaluate_binary_classification(model, valid_dataset)
+        f1 = metrics['f1_score']
+
+        # Update the best parameters if the current F1 is better
+        if f1 > best_f1:
+            best_f1 = f1
+            best_params = params
+
+    return best_params, best_f1
 
 
 
