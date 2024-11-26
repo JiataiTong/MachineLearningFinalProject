@@ -8,9 +8,9 @@ param_grid = {
     }
 
 depths = [1, 2]
-layer_sizes = [10, 50, 100]
+layer_sizes = [5, 10, 50]
 
-dataset_size_list = [10, 100, 1000, 10000]
+dataset_size_list = [10, 100, 1000]
 training_file_name = 'training_'
 validation_file_name = 'validating_'
 test_file_name = 'testing_'
