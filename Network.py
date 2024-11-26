@@ -8,8 +8,8 @@ from torch.utils.data import DataLoader, TensorDataset
 
 class Network(nn.Module):
 
-    def __init__(self, in_size, layer_dims, seed=50, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, in_size, layer_dims, seed=50):
+        super().__init__()
         random.seed(seed)
         np.random.seed(seed)
         torch.manual_seed(seed)
@@ -48,6 +48,8 @@ class Network(nn.Module):
                 x = relu(linear(x))
             # now to keep track of the neurons
             self.neurons[f'Hidden Layer {index + 1} Neurons:'] = x
+
+        return x
 
     def train_model_binary(self, train_dataset, valid_dataset, num_epochs=50, batch_size=32, learning_rate=0.001,
                     criterion=None):

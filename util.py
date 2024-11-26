@@ -137,7 +137,7 @@ def evaluate_binary_classification(model, dataset, threshold=0.5):
     return metrics
 
 
-def find_best_hyperparameters(model_class, train_dataset, valid_dataset, param_grid):
+def find_best_hyperparameters(model_class, insize, train_dataset, valid_dataset, param_grid):
     """
     Find the best hyperparameters for a model using F1 Score on the validation dataset.
 
@@ -159,7 +159,7 @@ def find_best_hyperparameters(model_class, train_dataset, valid_dataset, param_g
         learning_rate = params['learning_rate']
 
         # Initialize model
-        model = model_class(in_size=train_dataset[0][0].shape[0], layer_dims=[64, 32, 1])
+        model = model_class(in_size=insize, layer_dims=[64, 32, 1])
 
         # Train the model
         model.train_model_binary(
