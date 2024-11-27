@@ -31,6 +31,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\result\result_logistic_2411261825.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\result\result_nn_2411261825.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\result_2411261703.csv">
           <value>
             <Attribute>
