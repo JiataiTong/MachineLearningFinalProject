@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 current_time = datetime.now().strftime("%y%m%d%H%M")
-res_filename = f'result/result_{current_time}.csv'
+res_filename = f'result/result_nn_{current_time}.csv'
 
 sample_results_df = pd.DataFrame([{
     "dataset_size": 1000,
