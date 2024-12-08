@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import torch
 from torch.utils.data import TensorDataset, DataLoader
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.model_selection import ParameterGrid
 
 
@@ -106,7 +106,8 @@ def evaluate_binary_classification(model, dataset, threshold=0.5):
         threshold: Threshold for converting predicted probabilities to binary labels.
 
     Returns:
-        metrics: A dictionary containing accuracy, precision, recall, and F1 score.
+        metrics: A dictionary containing accuracy, precision, recall, F1 score,
+                 and the values tp, fp, tn, fn from the confusion matrix.
     """
     # DataLoader for the dataset
     loader = DataLoader(dataset, batch_size=len(dataset), shuffle=False)
@@ -126,18 +127,24 @@ def evaluate_binary_classification(model, dataset, threshold=0.5):
     predicted_labels = predicted_labels.numpy()
     true_labels = true_labels.numpy()
 
+    # Compute confusion matrix components
+    tn, fp, fn, tp = confusion_matrix(true_labels, predicted_labels).ravel()
+
     # Calculate metrics
     metrics = {
         "accuracy": accuracy_score(true_labels, predicted_labels),
         "precision": precision_score(true_labels, predicted_labels, zero_division=0),
         "recall": recall_score(true_labels, predicted_labels, zero_division=0),
-        "f1_score": f1_score(true_labels, predicted_labels, zero_division=0)
+        "f1_score": f1_score(true_labels, predicted_labels, zero_division=0),
+        "tp": tp,
+        "fp": fp,
+        "tn": tn,
+        "fn": fn
     }
 
     return metrics
 
-
-def find_best_hyperparameters(model_class, insize, train_dataset, valid_dataset, param_grid):
+def find_best_hyperparameters(model_class, insize, layer_dims, train_dataset, valid_dataset, param_grid):
     """
     Find the best hyperparameters for a model using F1 Score on the validation dataset.
 
@@ -159,7 +166,7 @@ def find_best_hyperparameters(model_class, insize, train_dataset, valid_dataset,
         learning_rate = params['learning_rate']
 
         # Initialize model
-        model = model_class(in_size=insize, layer_dims=[64, 32, 1])
+        model = model_class(in_size=insize, layer_dims=layer_dims)
 
         # Train the model
         model.train_model_binary(
