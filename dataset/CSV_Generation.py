@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 # # Number of samples
 # num_samples = 2000
 
-def generate_csv_data(num_samples, filename):
+def generate_csv_data(num_samples, filename, seed):
     # Seed for reproducibility
-    np.random.seed(42)
+    np.random.seed(seed)
 
     def generate_correlated_features(num_samples):
         # Generate base features

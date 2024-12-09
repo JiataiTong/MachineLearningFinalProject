@@ -54,15 +54,10 @@ class Network(nn.Module):
     def train_model_binary(self, train_dataset, valid_dataset, num_epochs=50, batch_size=32, learning_rate=0.001,
                     criterion=None):
         """
-        Train and validate the model.
+        Train and validate the model with binary class y labels.
 
         Args:
-            model: An instance of the Network class.
-            train_dataset: Training dataset as a PyTorch dataset.
-            valid_dataset: Validation dataset as a PyTorch dataset.
-            num_epochs: Number of epochs for training.
-            batch_size: Batch size for DataLoader.
-            learning_rate: Learning rate for the optimizer.
+            model, train_dataset, valid_dataset, num_epochs, batch_size, learning_rate
             criterion: Loss function.
 
         Returns:
@@ -119,20 +114,96 @@ class Network(nn.Module):
 
         return self, train_losses, valid_losses
 
+
+    def train_model_binary_regularization(self, train_dataset, valid_dataset, num_epochs=50, batch_size=32, learning_rate=0.001,
+                    criterion=None, reg_class=1, reg_lambda=0.01):
+        """
+        Train and validate the model with binary class y labels with l1/l2-regularization for large networks.
+
+        Args:
+            model, train_dataset, valid_dataset, num_epochs, batch_size, learning_rate
+            criterion: Loss function.
+            reg_class: 1 for l1, 2 for l2
+            reg_lambda: hyperparameter for regularizer
+
+        Returns:
+            model: The trained model.
+            train_losses: List of training losses per epoch.
+            valid_losses: List of validation losses per epoch.
+        """
+        # Default regulerizer
+        if reg_class != 2:
+            reg_class = 1
+
+        # Default criterion
+        if criterion is None:
+            criterion = nn.BCEWithLogitsLoss()
+
+        # Optimizer
+        optimizer = optim.Adam(self.parameters(), lr=learning_rate)
+
+        # DataLoaders
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)
+
+        # Track losses
+        train_losses = []
+        valid_losses = []
+
+        for epoch in range(num_epochs):
+            # Training phase
+            self.train()
+            running_loss = 0.0
+            for batch_x, batch_y in train_loader:
+                optimizer.zero_grad()
+                outputs = self(batch_x)
+
+                loss = criterion(outputs, batch_y)
+
+                if reg_class == 1:
+                    # Add the l1-regularizer
+                    penalty = sum(param.abs().sum() for param in self.parameters()) * reg_lambda
+                    loss = loss + penalty
+                else:
+                    # Add the l2-regularizer
+                    penalty = sum(param.pow(2).sum() for param in self.parameters()) * reg_lambda
+                    loss = loss + penalty
+                loss.backward()
+
+                optimizer.step()
+                running_loss += loss.item() * batch_x.size(0)
+
+            epoch_train_loss = running_loss / len(train_loader.dataset)
+            train_losses.append(epoch_train_loss)
+
+            # Validation phase
+            self.eval()
+            running_valid_loss = 0.0
+            with torch.no_grad():
+                for batch_x, batch_y in valid_loader:
+                    outputs = self(batch_x)
+                    loss = criterion(outputs, batch_y)
+                    running_valid_loss += loss.item() * batch_x.size(0)
+
+            epoch_valid_loss = running_valid_loss / len(valid_loader.dataset)
+            valid_losses.append(epoch_valid_loss)
+
+            # Print progress
+            if (epoch + 1) % 10 == 0 or epoch == 0:
+                print(
+                    f"Epoch [{epoch + 1}/{num_epochs}], Training Loss: {epoch_train_loss:.4f}, Validation Loss: {epoch_valid_loss:.4f}")
+
+        return self, train_losses, valid_losses
+
+
     def train_model_regression(self, train_dataset, valid_dataset, num_epochs=50, batch_size=32, learning_rate=0.001,
                     criterion=None):
         """
         Train and validate the model.
 
         Args:
-            model: An instance of the Network class.
-            train_dataset: Training dataset as a PyTorch dataset.
-            valid_dataset: Validation dataset as a PyTorch dataset.
-            num_epochs: Number of epochs for training.
-            batch_size: Batch size for DataLoader.
-            learning_rate: Learning rate for the optimizer.
+            model, train_dataset, valid_dataset, num_epochs, batch_size, learning_rate
             criterion: Loss function.
-
         Returns:
             model: The trained model.
             train_losses: List of training losses per epoch.

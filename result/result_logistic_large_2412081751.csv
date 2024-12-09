@@ -1,2 +1,0 @@
-dataset_size,num_epochs,batch_size,learning_rate,accuracy,precision,recall,f1,tp,fp,tn,fn
-10000,200,32,0.1,0.9654,0.9194432728806411,0.9336188436830836,0.9264768380790481,2180,191,7474,155

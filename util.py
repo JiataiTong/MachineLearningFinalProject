@@ -132,11 +132,9 @@ def evaluate_binary_classification(model, dataset, threshold=0.5):
     with torch.no_grad():
         for batch_x, batch_y in loader:
             predictions = model(batch_x)  # Forward pass
-            predictions = torch.sigmoid(predictions).squeeze()  # Apply sigmoid and flatten
-            predicted_labels = (predictions >= threshold).int()  # Convert probabilities to binary labels
-            true_labels = batch_y.int()  # Ensure labels are integers for comparison
-
-    # Convert tensors to NumPy arrays for evaluation
+            predictions = torch.sigmoid(predictions).squeeze()
+            predicted_labels = (predictions >= threshold).int()
+            true_labels = batch_y.int()
     predicted_labels = predicted_labels.numpy()
     true_labels = true_labels.numpy()
 
@@ -168,7 +166,7 @@ def find_best_hyperparameters(model_class, insize, layer_dims, train_dataset, va
     'learning_rate': [0.001, 0.01, 0.1]
     }
     """
-    best_f1 = 0
+    best_f1 = -1
     best_params = None
 
     # Iterate over all combinations of parameters
@@ -203,3 +201,52 @@ def find_best_hyperparameters(model_class, insize, layer_dims, train_dataset, va
 
 
 
+def find_best_hyperparameters_regularization(model_class, insize, layer_dims, train_dataset, valid_dataset, param_grid):
+    """
+    Find the best hyperparameters for a model using F1 Score on the validation dataset.
+
+    param_grid example:
+    param_grid = {
+    'num_epochs': [20, 50, 100],
+    'batch_size': [16, 32, 64],
+    'learning_rate': [0.001, 0.01, 0.1]
+    'regularization_class': [1, 2]
+    'regularization_lambda':[0.01, 0.001]
+    }
+    """
+    best_f1 = -1
+    best_params = None
+
+    # Iterate over all combinations of parameters
+    for params in ParameterGrid(param_grid):
+        # Unpack parameters
+        num_epochs = params['num_epochs']
+        batch_size = params['batch_size']
+        learning_rate = params['learning_rate']
+        reg_class = params['regularization_class']
+        reg_lambda = params['regularization_lambda']
+
+        # Initialize model
+        model = model_class(in_size=insize, layer_dims=layer_dims)
+
+        # Train the model
+        model.train_model_binary_regularization(
+            train_dataset=train_dataset,
+            valid_dataset=valid_dataset,
+            num_epochs=num_epochs,
+            batch_size=batch_size,
+            learning_rate=learning_rate,
+            reg_class=reg_class,
+            reg_lambda=reg_lambda
+        )
+
+        # Evaluate on the validation set
+        metrics = evaluate_binary_classification(model, valid_dataset)
+        f1 = metrics['f1_score']
+
+        # Update the best parameters if the current F1 is better
+        if f1 > best_f1:
+            best_f1 = f1
+            best_params = params
+
+    return best_params, best_f1

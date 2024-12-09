@@ -1,0 +1,7 @@
+dataset_size,layer_dims,dataset_number,hyperparameters,accuracy,precision,recall,f1,tp,fp,tn,fn
+1000,"[100, 100, 100, 1]",0,"{'batch_size': 64, 'learning_rate': 0.001, 'num_epochs': 100, 'regularization_class': 1, 'regularization_lambda': 0.001}",0.8166,0.55811078140455,0.9796006944444444,0.7110901071203529,2257,1787,5909,47
+1000,"[100, 100, 100, 1]",1,"{'batch_size': 32, 'learning_rate': 0.001, 'num_epochs': 100, 'regularization_class': 1, 'regularization_lambda': 0.001}",0.9207,0.9259259259259259,0.7282563462338744,0.815280689494526,1750,140,7457,653
+1000,"[100, 100, 100, 1]",2,"{'batch_size': 32, 'learning_rate': 0.001, 'num_epochs': 100, 'regularization_class': 1, 'regularization_lambda': 0.001}",0.9364,0.9453044375644994,0.7756138865368332,0.8520930232558139,1832,106,7532,530
+1000,"[100, 100, 100, 1]",3,"{'batch_size': 64, 'learning_rate': 0.001, 'num_epochs': 100, 'regularization_class': 1, 'regularization_lambda': 0.001}",0.851,0.6150335570469798,0.976139752876012,0.7546113306982872,2291,1434,6219,56
+1000,"[100, 100, 100, 1]",4,"{'batch_size': 64, 'learning_rate': 0.001, 'num_epochs': 200, 'regularization_class': 1, 'regularization_lambda': 0.001}",0.8239,0.8982597054886211,0.28480475382003395,0.43248469223332264,671,76,7568,1685
+1000,"[100, 100, 100, 1]",5,"{'batch_size': 64, 'learning_rate': 0.001, 'num_epochs': 200, 'regularization_class': 1, 'regularization_lambda': 0.001}",0.923,0.7989437947944172,0.8993630573248408,0.8461845785057932,2118,533,7112,237
