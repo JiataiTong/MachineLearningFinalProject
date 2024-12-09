@@ -15,11 +15,24 @@ home_ownership_status = ['Own', 'Rent', 'Mortgage', 'Other']
 loan_purpose = ['Home', 'Auto', 'Education', 'Debt Consolidation', 'Other']
 
 
+# def convert_date_to_int(date_str):
+#     # Convert a date string in the form %Y-%m-%d into a int number representing the number of days since 1970-01-01
+#     date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+#     days_since_epoch = (date_obj - datetime(1970, 1, 1)).days
+#     return days_since_epoch
+
 def convert_date_to_int(date_str):
     # Convert a date string in the form %Y-%m-%d into a int number representing the number of days since 1970-01-01
-    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+    try:
+        date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+
+    except ValueError:
+        date_obj = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+
+    # Calculate days since epoch (1970-01-01)
     days_since_epoch = (date_obj - datetime(1970, 1, 1)).days
     return days_since_epoch
+
 
 
 def convert_string_attr_to_boolean(target, dict_list):

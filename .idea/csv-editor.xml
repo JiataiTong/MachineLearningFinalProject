@@ -10,6 +10,48 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\experiment_data\testing_10000.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiment_data\testing_10000_5.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiment_data\training_10000.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiment_data\validating_10000.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiment_data\validating_10000_0.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\experiment_data\validating_1000_5.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\result\result_logistic_2411261825.csv">
           <value>
             <Attribute>
@@ -18,6 +60,27 @@
           </value>
         </entry>
         <entry key="\result\result_logistic_6_iter_2412081126.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\result\result_logistic_6_iter_2412081747.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\result\result_logistic_large_2412081751.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\result\result_logistic_large_2412081804.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -39,6 +102,20 @@
           </value>
         </entry>
         <entry key="\result\result_nn_6_iter_2412081047.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\result\result_nn_large_2412081753.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\result\result_nn_large_2412081805.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -74,6 +151,13 @@
           </value>
         </entry>
         <entry key="\training_10000.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\validating_10.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
