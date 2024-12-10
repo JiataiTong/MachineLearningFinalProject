@@ -108,21 +108,7 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\result\result_nn_regression_6_iter_2412091234.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\result\result_nn_regression_6_iter_2412091237.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\result\result_nn_regression_6_iter_2412092305.csv">
+        <entry key="\result\result_nn_regression_6_iter_2412092356.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
