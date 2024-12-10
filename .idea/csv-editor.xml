@@ -66,6 +66,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\experiment_data\validating_10_1.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\result\result_logistic_6_iter_2412082047.csv">
           <value>
             <Attribute>
@@ -95,6 +102,27 @@
           </value>
         </entry>
         <entry key="\result\result_nn_large_2412082049.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\result\result_nn_regression_6_iter_2412091234.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\result\result_nn_regression_6_iter_2412091237.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\result\result_nn_regression_6_iter_2412092305.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

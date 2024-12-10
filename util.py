@@ -131,7 +131,7 @@ def evaluate_binary_classification(model, dataset, threshold=0.5):
     # Gather predictions and true labels
     with torch.no_grad():
         for batch_x, batch_y in loader:
-            predictions = model(batch_x)  # Forward pass
+            predictions = model(batch_x)
             predictions = torch.sigmoid(predictions).squeeze()
             predicted_labels = (predictions >= threshold).int()
             true_labels = batch_y.int()
@@ -250,3 +250,127 @@ def find_best_hyperparameters_regularization(model_class, insize, layer_dims, tr
             best_params = params
 
     return best_params, best_f1
+
+
+def find_best_hyperparameters_regression(model_class, insize, layer_dims, train_dataset, valid_dataset, validate_dataset_binary, param_grid):
+    """
+    Find the best hyperparameters and threshold for a regression model
+    using ACCURACY on the validation dataset.
+
+    Note: We note that using f1 score won't give any reasonable thresholds
+
+    Args:
+        model_class: Class of the model to be used.
+        insize: Input size for the model.
+        layer_dims: List of layer dimensions.
+        train_dataset: Dataset for training.
+        valid_dataset: Dataset for validation with risk scores (0 - 1 after standardization).
+        valid_dataset: Dataset for validation with binary classes.
+        param_grid:
+            param_grid example:
+            param_grid = {
+            'num_epochs': [20, 50, 100],
+            'batch_size': [16, 32, 64],
+            'learning_rate': [0.001, 0.01, 0.1]
+            }
+
+    Returns:
+        best_params: Best combination of hyperparameters.
+        best_threshold: Threshold that gives the best F1 score.
+        best_f1: Best F1 score achieved.
+    """
+    best_accuracy = -1
+    best_params = None
+    best_threshold = None
+
+    # Iterate over all combinations of parameters
+    for params in ParameterGrid(param_grid):
+        # Unpack parameters
+        num_epochs = params['num_epochs']
+        batch_size = params['batch_size']
+        learning_rate = params['learning_rate']
+
+        # Initialize model
+        model = model_class(in_size=insize, layer_dims=layer_dims)
+
+        # Train the model
+        model.train_model_regression(
+            train_dataset=train_dataset,
+            valid_dataset=valid_dataset,
+            num_epochs=num_epochs,
+            batch_size=batch_size,
+            learning_rate=learning_rate
+        )
+
+        # Validation: Calculate predictions
+        model.eval()
+        valid_loader = DataLoader(validate_dataset_binary, batch_size=batch_size, shuffle=False)
+        predictions = []
+        true_labels = []
+
+        with torch.no_grad():
+            for batch_x, batch_y in valid_loader:
+                outputs = model(batch_x)
+                predictions.extend(outputs.squeeze().tolist())
+                true_labels.extend(batch_y.tolist())
+
+        # Find the best threshold for F1 score
+        thresholds = [i * 0.01 for i in range(1, 100)]  # Test thresholds from 0.01 to 0.99
+        for threshold in thresholds:
+            binary_preds = [1 if pred <= threshold else 0 for pred in predictions]
+            accuracy = accuracy_score(true_labels, binary_preds)
+
+            if accuracy > best_accuracy:
+                best_accuracy = accuracy
+                best_params = params
+                best_threshold = threshold
+
+    return best_params, best_threshold, best_accuracy
+
+
+def evaluate_binary_classification_for_regression_model(model, dataset, threshold):
+    """
+    Evaluate a trained regression model on a test or validation dataset with binary y labels and a threshold.
+
+    Args:
+        model: The trained NN regression model (Risk scores).
+        dataset: A PyTorch dataset containing features and BINARY!!! labels.
+        threshold: Threshold for converting predicted probabilities to binary labels.
+
+        Note: true --> <= threshold
+
+    Returns:
+        metrics: A dictionary containing accuracy, precision, recall, F1 score,
+                 and the values tp, fp, tn, fn from the confusion matrix.
+    """
+    # DataLoader for the dataset
+    loader = DataLoader(dataset, batch_size=len(dataset), shuffle=False)
+
+    # Ensure model is in evaluation mode
+    model.eval()
+
+    # Gather predictions and true labels
+    with torch.no_grad():
+        for batch_x, batch_y in loader:
+            predictions = model(batch_x)
+            predicted_labels = (predictions.squeeze() <= threshold).int()  # No sigmoid here
+            true_labels = batch_y.int()
+    predicted_labels = predicted_labels.numpy()
+    true_labels = true_labels.numpy()
+
+    # Compute confusion matrix components
+    tn, fp, fn, tp = confusion_matrix(true_labels, predicted_labels).ravel()
+
+    # Calculate metrics
+    metrics = {
+        "accuracy": accuracy_score(true_labels, predicted_labels),
+        "precision": precision_score(true_labels, predicted_labels, zero_division=0),
+        "recall": recall_score(true_labels, predicted_labels, zero_division=0),
+        "f1_score": f1_score(true_labels, predicted_labels, zero_division=0),
+        "tp": tp,
+        "fp": fp,
+        "tn": tn,
+        "fn": fn
+    }
+
+    return metrics
